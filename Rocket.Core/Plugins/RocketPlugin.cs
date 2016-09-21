@@ -18,28 +18,21 @@ namespace Rocket.Core.Plugins
 
         public RocketPlugin() : base()
         {
-            if (Core.R.Settings.Instance.WebConfigurations.Enabled)
+            if (R.Settings.Instance.WebConfigurations.Enabled)
             {
-                string url = string.Format(Environment.WebConfigurationTemplate, Core.R.Settings.Instance.WebConfigurations.Url, Name, R.Implementation.InstanceId);
+                string url = string.Format(Environment.WebConfigurationTemplate, R.Settings.Instance.WebConfigurations.Url, Name, R.Implementation.InstanceId);
                 configuration = new WebXMLFileAsset<RocketPluginConfiguration>(url, null, (IAsset<RocketPluginConfiguration> asset) => { base.LoadPlugin(); });
             }
             else
             {
-                configuration = new XMLFileAsset<RocketPluginConfiguration>(Directory + string.Format(Core.Environment.PluginConfigurationFileTemplate, Name));
+                configuration = new XMLFileAsset<RocketPluginConfiguration>(Directory + string.Format(Environment.PluginConfigurationFileTemplate, Name));
             }
         }
 
         public override void LoadPlugin()
         {
-            configuration.Load();
-            if (!Core.R.Settings.Instance.WebConfigurations.Enabled)
-            {
-                base.LoadPlugin();
-            }
+            configuration.Load((IAsset<RocketPluginConfiguration> asset) => { base.LoadPlugin(); });
         }
-
-
-
     }
 
     public class RocketPlugin : MonoBehaviour, IRocketPlugin
@@ -105,13 +98,13 @@ namespace Rocket.Core.Plugins
 
         public static bool IsDependencyLoaded(string plugin)
         {
-            return Rocket.Core.R.Plugins.GetPlugin(plugin) != null;
+            return R.Plugins.GetPlugin(plugin) != null;
         }
 
         public delegate void ExecuteDependencyCodeDelegate(IRocketPlugin plugin); 
         public static void ExecuteDependencyCode(string plugin,ExecuteDependencyCodeDelegate a)
         {
-            IRocketPlugin p = Rocket.Core.R.Plugins.GetPlugin(plugin);
+            IRocketPlugin p = R.Plugins.GetPlugin(plugin);
             if (p != null) 
                 a(p);
         }
@@ -191,7 +184,7 @@ namespace Rocket.Core.Plugins
 
         private void OnEnable()
         {
-                LoadPlugin();
+            LoadPlugin();
         }
 
         private void OnDisable()
@@ -199,16 +192,9 @@ namespace Rocket.Core.Plugins
             UnloadPlugin();
         }
 
-        protected virtual void Load()
-        {
+        protected virtual void Load() { }
 
-        }
-
-
-        protected virtual void Unload()
-        {
-
-        }
+        protected virtual void Unload() { }
 
         public T TryAddComponent<T>() where T : Component
         {
