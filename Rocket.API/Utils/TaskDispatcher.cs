@@ -8,9 +8,16 @@ namespace Rocket.API.Utils
     public class TaskDispatcher : MonoBehaviour
     {
         public static TaskDispatcher Instance { get; private set; }
-        private static readonly List<Action> QueuedMainActions = new List<Action>();
-        private static readonly List<Action> QueuedMainFixedActions = new List<Action>();
-        private static readonly List<Action> QueuedAsyncActions = new List<Action>();
+
+        private static readonly Queue<Action> QueuedMainActions = new Queue<Action>();
+        private static readonly Queue<Action> QueuedMainActionsBuffer = new Queue<Action>();
+
+        private static readonly Queue<Action> QueuedMainFixedActions = new Queue<Action>();
+        private static readonly Queue<Action> QueuedMainFixedActionsBuffer = new Queue<Action>();
+
+        private static readonly Queue<Action> QueuedAsyncActions = new Queue<Action>();
+        private static readonly Queue<Action> QueuedAsyncActionsBuffer = new Queue<Action>();
+
         private static int _mainThreadId;
         private Thread _thread;
 
@@ -40,9 +47,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to queue for the next Update() call</param>
         public void QueueUpdate(Action action)
         {
-            lock (QueuedMainActions)
+            lock (QueuedMainActionsBuffer)
             {
-                QueuedMainActions.Add(action);
+                QueuedMainActionsBuffer.Enqueue(action);
             }
         }
         /// <summary>
@@ -61,9 +68,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to queue for thenext FixedUpdate() call</param>
         public void QueueUpdateFixed(Action action)
         {
-            lock (QueuedMainFixedActions)
+            lock (QueuedMainFixedActionsBuffer)
             {
-                QueuedMainFixedActions.Add(action);
+                QueuedMainFixedActionsBuffer.Enqueue(action);
             }
         }
 
@@ -73,9 +80,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to call async</param>
         public void QueueAsync(Action action)
         {
-            lock (QueuedAsyncActions)
+            lock (QueuedAsyncActionsBuffer)
             {
-                QueuedAsyncActions.Add(action);
+                QueuedAsyncActionsBuffer.Enqueue(action);
             }
         }
 
@@ -107,70 +114,69 @@ namespace Rocket.API.Utils
 
         protected void Update()
         {
-            lock (QueuedMainActions)
+            lock (QueuedMainActionsBuffer)
             {
-                if (QueuedMainActions.Count == 0)
+                while (QueuedMainActionsBuffer.Count != 0)
                 {
-                    return;
+                    QueuedMainActions.Enqueue(QueuedMainActionsBuffer.Dequeue());
                 }
+            }
 
-                foreach (Action action in QueuedMainActions)
-                {
-                    action.Invoke();
-                }
-                QueuedMainActions.Clear();
+            while (QueuedMainActions.Count != 0)
+            {
+                QueuedMainActions.Dequeue().Invoke();
             }
         }
 
         protected void FixedUpdate()
         {
-            lock (QueuedMainFixedActions)
+            lock (QueuedMainFixedActionsBuffer)
             {
-                if (QueuedMainFixedActions.Count == 0)
+                while (QueuedMainFixedActionsBuffer.Count != 0)
                 {
-                    return;
+                    QueuedMainFixedActions.Enqueue(QueuedMainFixedActionsBuffer.Dequeue());
                 }
-                foreach (Action action in QueuedMainFixedActions)
-                {
-                    action.Invoke();
-                }
-                QueuedMainFixedActions.Clear();
+            }
+
+            while (QueuedMainFixedActions.Count != 0)
+            {
+                QueuedMainFixedActions.Dequeue().Invoke();
             }
         }
 
         private void AsyncUpdate()
         {
-            lock (QueuedAsyncActions)
+            lock (QueuedAsyncActionsBuffer)
             {
-                if (QueuedAsyncActions.Count == 0)
+                while (QueuedAsyncActionsBuffer.Count != 0)
                 {
-                    return;
+                    QueuedAsyncActions.Enqueue(QueuedAsyncActionsBuffer.Dequeue());
                 }
-
-                foreach (Action action in QueuedAsyncActions)
-                {
-                    action.Invoke();
-                }
-                QueuedAsyncActions.Clear();
             }
+
+            while (QueuedAsyncActions.Count != 0)
+            {
+                QueuedAsyncActions.Dequeue().Invoke();
+            }
+
             Thread.Sleep(10);
         }
 
         public void Shutdown()
         {
-            lock (QueuedAsyncActions)
+            lock (QueuedAsyncActionsBuffer)
             {
-                QueuedAsyncActions?.Clear();
+                QueuedAsyncActionsBuffer?.Clear();
             }
 
-            lock (QueuedMainActions)
+            lock (QueuedMainActionsBuffer)
             {
-                QueuedAsyncActions?.Clear();
+                QueuedMainActionsBuffer?.Clear();
             }
 
-            lock (QueuedAsyncActions)
+            lock (QueuedAsyncActionsBuffer)
             {
-                QueuedAsyncActions?.Clear();
+                QueuedAsyncActionsBuffer?.Clear();
             }
 
             _thread?.Interrupt();
