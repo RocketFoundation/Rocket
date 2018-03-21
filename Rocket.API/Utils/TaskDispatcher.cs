@@ -174,9 +174,9 @@ namespace Rocket.API.Utils
                 QueuedMainActionsBuffer?.Clear();
             }
 
-            lock (QueuedAsyncActionsBuffer)
+            lock (QueuedMainFixedActionsBuffer)
             {
-                QueuedAsyncActionsBuffer?.Clear();
+                QueuedMainFixedActionsBuffer?.Clear();
             }
 
             _thread?.Interrupt();
