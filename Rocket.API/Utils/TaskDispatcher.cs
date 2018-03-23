@@ -22,7 +22,7 @@ namespace Rocket.API.Utils
         private Thread _thread;
 
         //This will allow greater control over the interation of the secondary Thread.
-        private bool runThread = default(bool);
+        private volatile bool runThread = default(bool);
 
         protected void Awake()
         {
