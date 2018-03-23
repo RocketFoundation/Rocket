@@ -8,11 +8,21 @@ namespace Rocket.API.Utils
     public class TaskDispatcher : MonoBehaviour
     {
         public static TaskDispatcher Instance { get; private set; }
+
         private static readonly List<Action> QueuedMainActions = new List<Action>();
+        private static readonly List<Action> QueuedMainActionsBuffer = new List<Action>();
+
         private static readonly List<Action> QueuedMainFixedActions = new List<Action>();
+        private static readonly List<Action> QueuedMainFixedActionsBuffer = new List<Action>();
+
         private static readonly List<Action> QueuedAsyncActions = new List<Action>();
+        private static readonly List<Action> QueuedAsyncActionsBuffer = new List<Action>();
+
         private static int _mainThreadId;
         private Thread _thread;
+
+        //This will allow greater control over the interation of the secondary Thread.
+        private volatile bool runThread = default(bool);
 
         protected void Awake()
         {
@@ -27,6 +37,8 @@ namespace Rocket.API.Utils
 
         protected void Start()
         {
+            runThread = true;
+
             _mainThreadId = Thread.CurrentThread.ManagedThreadId;
             _thread = new Thread(AsyncUpdate);
             _thread.Start();
@@ -40,9 +52,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to queue for the next Update() call</param>
         public void QueueUpdate(Action action)
         {
-            lock (QueuedMainActions)
+            lock (QueuedMainActionsBuffer)
             {
-                QueuedMainActions.Add(action);
+                QueuedMainActionsBuffer.Add(action);
             }
         }
         /// <summary>
@@ -61,9 +73,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to queue for thenext FixedUpdate() call</param>
         public void QueueUpdateFixed(Action action)
         {
-            lock (QueuedMainFixedActions)
+            lock (QueuedMainFixedActionsBuffer)
             {
-                QueuedMainFixedActions.Add(action);
+                QueuedMainFixedActionsBuffer.Add(action);
             }
         }
 
@@ -73,9 +85,9 @@ namespace Rocket.API.Utils
         /// <param name="action">The action to call async</param>
         public void QueueAsync(Action action)
         {
-            lock (QueuedAsyncActions)
+            lock (QueuedAsyncActionsBuffer)
             {
-                QueuedAsyncActions.Add(action);
+                QueuedAsyncActionsBuffer.Add(action);
             }
         }
 
@@ -107,75 +119,102 @@ namespace Rocket.API.Utils
 
         protected void Update()
         {
-            lock (QueuedMainActions)
+            lock (QueuedMainActionsBuffer)
             {
-                if (QueuedMainActions.Count == 0)
+                if (QueuedMainActionsBuffer.Count != 0)
                 {
-                    return;
+                    QueuedMainActions.AddRange(QueuedMainActionsBuffer);
+                    QueuedMainActionsBuffer.Clear();
+                }
+            }
+
+            if (QueuedMainActions.Count != 0)
+            {
+                for (int i = 0; i < QueuedMainActions.Count; i++)
+                {
+                    QueuedMainActions[i].Invoke();
                 }
 
-                foreach (Action action in QueuedMainActions)
-                {
-                    action.Invoke();
-                }
                 QueuedMainActions.Clear();
             }
         }
 
         protected void FixedUpdate()
         {
-            lock (QueuedMainFixedActions)
+            lock (QueuedMainFixedActionsBuffer)
             {
-                if (QueuedMainFixedActions.Count == 0)
+                if (QueuedMainFixedActionsBuffer.Count != 0)
                 {
-                    return;
+                    QueuedMainFixedActions.AddRange(QueuedMainFixedActionsBuffer);
+                    QueuedMainFixedActionsBuffer.Clear();
                 }
-                foreach (Action action in QueuedMainFixedActions)
+            }
+
+            if (QueuedMainFixedActions.Count != 0)
+            {
+                for (int i = 0; i < QueuedMainFixedActions.Count; i++)
                 {
-                    action.Invoke();
+                    QueuedMainFixedActions[i].Invoke();
                 }
+
                 QueuedMainFixedActions.Clear();
             }
         }
 
         private void AsyncUpdate()
         {
-            lock (QueuedAsyncActions)
+            //It wouldn't interate more than once without this.
+            while (runThread)
             {
-                if (QueuedAsyncActions.Count == 0)
+                Thread.Sleep(10);
+
+                lock (QueuedAsyncActionsBuffer)
                 {
-                    return;
+                    if (QueuedAsyncActionsBuffer.Count != 0)
+                    {
+                        QueuedAsyncActions.AddRange(QueuedAsyncActionsBuffer);
+                        QueuedAsyncActionsBuffer.Clear();
+                    }
                 }
 
-                foreach (Action action in QueuedAsyncActions)
+                if (QueuedAsyncActions.Count != 0)
                 {
-                    action.Invoke();
+                    for (int i = 0; i < QueuedAsyncActions.Count; i++)
+                    {
+                        QueuedAsyncActions[i].Invoke();
+                    }
+
+                    QueuedAsyncActions.Clear();
                 }
-                QueuedAsyncActions.Clear();
             }
-            Thread.Sleep(10);
         }
 
         public void Shutdown()
         {
-            lock (QueuedAsyncActions)
-            {
-                QueuedAsyncActions?.Clear();
-            }
+            //Instead of interrupting, just stop it from iterating and let it finish.
+            runThread = false;
+            _thread.Join();
+            
+            //Should be safe to clear these from the main Thread now that the secondary Thread has stopped.
+            QueuedAsyncActionsBuffer.Clear();
+            QueuedMainActionsBuffer.Clear();
+            QueuedMainFixedActionsBuffer.Clear();
 
-            lock (QueuedMainActions)
-            {
-                QueuedAsyncActions?.Clear();
-            }
+            //These should be empty anyway, but just to ensure.
+            QueuedAsyncActions.Clear();
+            QueuedMainActions.Clear();
+            QueuedMainFixedActions.Clear();
 
-            lock (QueuedAsyncActions)
-            {
-                QueuedAsyncActions?.Clear();
-            }
+            _thread = null;
 
-            _thread?.Interrupt();
+            //Wouldn't join be better to avoid any I/O corruption?
+            //_thread?.Interrupt();
+
+            //Why would it restart the Thread on Shutdown?
+            /*
             _thread = new Thread(AsyncUpdate);
             _thread.Start();
+            */
         }
     }
 }
