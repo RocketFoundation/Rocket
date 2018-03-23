@@ -205,6 +205,8 @@ namespace Rocket.API.Utils
             QueuedMainActions.Clear();
             QueuedMainFixedActions.Clear();
 
+            _thread = null;
+
             //Wouldn't join be better to avoid any I/O corruption?
             //_thread?.Interrupt();
 
