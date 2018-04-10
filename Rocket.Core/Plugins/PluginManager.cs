@@ -8,11 +8,12 @@ using Rocket.API.DependencyInjection;
 using Rocket.API.Eventing;
 using Rocket.API.Logging;
 using Rocket.API.Plugin;
+using Rocket.Core.Events.Plugins;
 using Rocket.Core.Extensions;
 
 namespace Rocket.Core.Plugins
 {
-    public class PluginManager : IPluginManager, ICommandProvider
+    public class PluginManager : IPluginManager, ICommandProvider, IEventEmitter
     {
         private static readonly string pluginsDirectory = "./Plugins/";
 
@@ -29,6 +30,9 @@ namespace Rocket.Core.Plugins
         private Dictionary<IPlugin, List<ICommand>> commands;
         private Dictionary<string, string> packageAssemblies;
         private Dictionary<string, string> pluginAssemblies;
+
+        public string Name => GetType().FullName;
+        public bool IsAlive => true;
 
         public PluginManager(IDependencyContainer dependencyContainer, IDependencyResolver resolver, ILogger logger,
                              IEventManager eventManager)
@@ -92,9 +96,13 @@ namespace Rocket.Core.Plugins
             foreach (Assembly assembly in assemblies)
                 LoadPluginFromAssembly(assembly);
 
+            eventManager.Emit(this, new PluginsPreLoadedEvent(true));
+
             container.TryGetAll(out IEnumerable<IPlugin> plugins);
             foreach (IPlugin plugin in plugins)
                 plugin.Load();
+
+            eventManager.Emit(this, new PluginsPostLoadedEvent(true));
         }
 
         public IPlugin GetPlugin(string name)
