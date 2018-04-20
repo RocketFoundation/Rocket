@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -31,9 +32,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1> tuple = other as Tuple<T1>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1> tuple))
                 throw new ArgumentException(nameof(other));
 
             return comparer.Compare(Item1, tuple.Item1);
@@ -97,17 +96,12 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2> tuple = other as Tuple<T1, T2>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num = comparer.Compare(Item1, tuple.Item1);
 
-            if (num != 0)
-                return num;
-
-            return comparer.Compare(Item2, tuple.Item2);
+            return num != 0 ? num : comparer.Compare(Item2, tuple.Item2);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -173,9 +167,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3> tuple = other as Tuple<T1, T2, T3>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num1 = comparer.Compare(Item1, tuple.Item1);
@@ -185,10 +177,7 @@ namespace System
 
             int num2 = comparer.Compare(Item2, tuple.Item2);
 
-            if (num2 != 0)
-                return num2;
-
-            return comparer.Compare(Item3, tuple.Item3);
+            return num2 != 0 ? num2 : comparer.Compare(Item3, tuple.Item3);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -263,9 +252,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3, T4> tuple = other as Tuple<T1, T2, T3, T4>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num1 = comparer.Compare(Item1, tuple.Item1);
@@ -280,10 +267,7 @@ namespace System
 
             int num3 = comparer.Compare(Item3, tuple.Item3);
 
-            if (num3 != 0)
-                return num3;
-
-            return comparer.Compare(Item4, tuple.Item4);
+            return num3 != 0 ? num3 : comparer.Compare(Item4, tuple.Item4);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -364,9 +348,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3, T4, T5> tuple = other as Tuple<T1, T2, T3, T4, T5>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num1 = comparer.Compare(Item1, tuple.Item1);
@@ -386,10 +368,7 @@ namespace System
 
             int num4 = comparer.Compare(Item4, tuple.Item4);
 
-            if (num4 != 0)
-                return num4;
-
-            return comparer.Compare(Item5, tuple.Item5);
+            return num4 != 0 ? num4 : comparer.Compare(Item5, tuple.Item5);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -476,9 +455,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3, T4, T5, T6> tuple = other as Tuple<T1, T2, T3, T4, T5, T6>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num1 = comparer.Compare(Item1, tuple.Item1);
@@ -503,10 +480,7 @@ namespace System
 
             int num5 = comparer.Compare(Item5, tuple.Item5);
 
-            if (num5 != 0)
-                return num5;
-
-            return comparer.Compare(Item6, tuple.Item6);
+            return num5 != 0 ? num5 : comparer.Compare(Item6, tuple.Item6);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -605,9 +579,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3, T4, T5, T6, T7> tuple = other as Tuple<T1, T2, T3, T4, T5, T6, T7>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num1 = comparer.Compare(Item1, tuple.Item1);
@@ -637,10 +609,7 @@ namespace System
 
             int num6 = comparer.Compare(Item6, tuple.Item6);
 
-            if (num6 != 0)
-                return num6;
-
-            return comparer.Compare(Item7, tuple.Item7);
+            return num6 != 0 ? num6 : comparer.Compare(Item7, tuple.Item7);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -711,7 +680,7 @@ namespace System
 
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
-            if (!(rest is ITuple))
+            if (typeof(TRest).IsValueType)
                 throw new ArgumentException(nameof(rest));
 
             Item1 = item1;
@@ -749,9 +718,7 @@ namespace System
             if (other == null)
                 return 1;
 
-            Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple = other as Tuple<T1, T2, T3, T4, T5, T6, T7, TRest>;
-
-            if (tuple == null)
+            if (!(other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple))
                 throw new ArgumentException(nameof(other));
 
             int num = comparer.Compare(Item1, tuple.Item1);
@@ -786,10 +753,7 @@ namespace System
 
             num = comparer.Compare(Item7, tuple.Item7);
 
-            if (num != 0)
-                return num;
-
-            return comparer.Compare(Rest, tuple.Rest);
+            return num != 0 ? num : comparer.Compare(Rest, tuple.Rest);
         }
 
         public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
@@ -819,10 +783,8 @@ namespace System
                     return -1;
             }
         }
-
-        //TODO: I'll need to restructure this a bit, I'll do that in a future commit.
-        public override string ToString() => throw new NotImplementedException();
-        /*
+        
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -840,11 +802,13 @@ namespace System
             sb.Append(Item6);
             sb.Append(", ");
             sb.Append(Item7);
+            sb.Append(", ");
+            //TODO: Add a better workaround
+            sb.Append(Rest.ToString().Replace("(", string.Empty).Replace(")", string.Empty));
             sb.Append(")");
 
             return sb.ToString();
         }
-        */
 
         int ITuple.Length => 7 + Rest.Length;
 
