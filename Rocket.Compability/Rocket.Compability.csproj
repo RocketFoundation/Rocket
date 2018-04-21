@@ -50,6 +50,7 @@
     <Compile Include="System\Runtime\CompilerServices\ITuple.cs" />
     <Compile Include="System\Tuple.cs" />
     <Compile Include="System\Tuples.cs" />
+    <Compile Include="System\ValueTuple.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Rocket.Compability.nuspec">
