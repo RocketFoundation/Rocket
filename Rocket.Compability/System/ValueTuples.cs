@@ -679,7 +679,7 @@ namespace System
 
         public ValueTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
-            if (typeof(TRest).IsValueType)
+            if (!typeof(TRest).IsValueType)
                 throw new ArgumentException(nameof(rest));
 
             Item1 = item1;

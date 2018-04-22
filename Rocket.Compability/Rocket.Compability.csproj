@@ -49,6 +49,7 @@
     <Compile Include="System\Collections\IStructuralEquatable.cs" />
     <Compile Include="System\Runtime\CompilerServices\ITuple.cs" />
     <Compile Include="System\Tuple.cs" />
+    <Compile Include="System\TupleExtensions.cs" />
     <Compile Include="System\Tuples.cs" />
     <Compile Include="System\ValueTuple.cs" />
     <Compile Include="System\ValueTuples.cs" />
