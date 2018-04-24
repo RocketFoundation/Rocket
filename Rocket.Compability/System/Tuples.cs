@@ -7,25 +7,14 @@ namespace System
 {
     public class Tuple<T1> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
         public Tuple(T1 item1)
         {
-            m_Item1 = item1;
+            Item1 = item1;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1> tuple && comparer.Equals(Item1, tuple.Item1);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -38,9 +27,33 @@ namespace System
             return comparer.Compare(Item1, tuple.Item1);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1> tuple && comparer.Equals(Item1, tuple.Item1);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => comparer.GetHashCode(Item1);
+
+        int ITuple.Length => 1;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -52,47 +65,20 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 1;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
         public Tuple(T1 item1, T2 item2)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
+            Item1 = item1;
+            Item2 = item2;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2> tuple && comparer.Equals(Item1, tuple.Item1) && comparer.Equals(Item2, tuple.Item2);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -107,9 +93,34 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item2, tuple.Item2);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2> tuple && comparer.Equals(Item1, tuple.Item1) && comparer.Equals(Item2, tuple.Item2);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2));
+
+        int ITuple.Length => 2;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -123,52 +134,22 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 2;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
         public Tuple(T1 item1, T2 item2, T3 item3)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3> tuple && comparer.Equals(Item1, tuple.Item1) && comparer.Equals(Item2, tuple.Item2) && comparer.Equals(Item3, tuple.Item3);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -188,9 +169,35 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item3, tuple.Item3);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3> tuple && comparer.Equals(Item1, tuple.Item1) && comparer.Equals(Item2, tuple.Item2) && comparer.Equals(Item3, tuple.Item3);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3));
+
+        int ITuple.Length => 3;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -206,61 +213,24 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 3;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3, T4> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
-        public T4 Item4 => m_Item4;
-        private readonly T4 m_Item4;
-
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
-            m_Item4 = item4;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
+            Item4 = item4;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3, T4> tuple
-                && comparer.Equals(Item1, tuple.Item1)
-                && comparer.Equals(Item2, tuple.Item2)
-                && comparer.Equals(Item3, tuple.Item3)
-                && comparer.Equals(Item4, tuple.Item4);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -285,9 +255,40 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item4, tuple.Item4);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3, T4> tuple
+                && comparer.Equals(Item1, tuple.Item1)
+                && comparer.Equals(Item2, tuple.Item2)
+                && comparer.Equals(Item3, tuple.Item3)
+                && comparer.Equals(Item4, tuple.Item4);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4));
+
+        int ITuple.Length => 4;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    case 3:  return Item4;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -305,67 +306,26 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 4;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    case 3: return Item4;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3, T4, T5> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
-        public T4 Item4 => m_Item4;
-        private readonly T4 m_Item4;
-
-        public T5 Item5 => m_Item5;
-        private readonly T5 m_Item5;
-
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
-            m_Item4 = item4;
-            m_Item5 = item5;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
+            Item4 = item4;
+            Item5 = item5;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+        public T5 Item5 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3, T4, T5> tuple
-                && comparer.Equals(Item1, tuple.Item1)
-                && comparer.Equals(Item2, tuple.Item2)
-                && comparer.Equals(Item3, tuple.Item3)
-                && comparer.Equals(Item4, tuple.Item4)
-                && comparer.Equals(Item5, tuple.Item5);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -395,9 +355,42 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item5, tuple.Item5);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3, T4, T5> tuple
+                && comparer.Equals(Item1, tuple.Item1)
+                && comparer.Equals(Item2, tuple.Item2)
+                && comparer.Equals(Item3, tuple.Item3)
+                && comparer.Equals(Item4, tuple.Item4)
+                && comparer.Equals(Item5, tuple.Item5);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5));
+
+        int ITuple.Length => 5;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    case 3:  return Item4;
+                    case 4:  return Item5;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -417,73 +410,28 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 5;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    case 3: return Item4;
-                    case 4: return Item5;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3, T4, T5, T6> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
-        public T4 Item4 => m_Item4;
-        private readonly T4 m_Item4;
-
-        public T5 Item5 => m_Item5;
-        private readonly T5 m_Item5;
-
-        public T6 Item6 => m_Item6;
-        private readonly T6 m_Item6;
-
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
-            m_Item4 = item4;
-            m_Item5 = item5;
-            m_Item6 = item6;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
+            Item4 = item4;
+            Item5 = item5;
+            Item6 = item6;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+        public T5 Item5 { get; }
+        public T6 Item6 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3, T4, T5, T6> tuple
-                && comparer.Equals(Item1, tuple.Item1)
-                && comparer.Equals(Item2, tuple.Item2)
-                && comparer.Equals(Item3, tuple.Item3)
-                && comparer.Equals(Item4, tuple.Item4)
-                && comparer.Equals(Item5, tuple.Item5)
-                && comparer.Equals(Item6, tuple.Item6);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -518,15 +466,50 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item6, tuple.Item6);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3, T4, T5, T6> tuple
+                && comparer.Equals(Item1, tuple.Item1)
+                && comparer.Equals(Item2, tuple.Item2)
+                && comparer.Equals(Item3, tuple.Item3)
+                && comparer.Equals(Item4, tuple.Item4)
+                && comparer.Equals(Item5, tuple.Item5)
+                && comparer.Equals(Item6, tuple.Item6);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(
-            comparer.GetHashCode(Item1), 
-            comparer.GetHashCode(Item2), 
-            comparer.GetHashCode(Item3), 
-            comparer.GetHashCode(Item4), 
+            comparer.GetHashCode(Item1),
+            comparer.GetHashCode(Item2),
+            comparer.GetHashCode(Item3),
+            comparer.GetHashCode(Item4),
             comparer.GetHashCode(Item5),
             comparer.GetHashCode(Item6));
+
+        int ITuple.Length => 6;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    case 3:  return Item4;
+                    case 4:  return Item5;
+                    case 5:  return Item6;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -548,79 +531,30 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 6;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    case 3: return Item4;
-                    case 4: return Item5;
-                    case 5: return Item6;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3, T4, T5, T6, T7> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
-        public T4 Item4 => m_Item4;
-        private readonly T4 m_Item4;
-
-        public T5 Item5 => m_Item5;
-        private readonly T5 m_Item5;
-
-        public T6 Item6 => m_Item6;
-        private readonly T6 m_Item6;
-
-        public T7 Item7 => m_Item7;
-        private readonly T7 m_Item7;
-
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7)
         {
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
-            m_Item4 = item4;
-            m_Item5 = item5;
-            m_Item6 = item6;
-            m_Item7 = item7;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
+            Item4 = item4;
+            Item5 = item5;
+            Item6 = item6;
+            Item7 = item7;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+        public T5 Item5 { get; }
+        public T6 Item6 { get; }
+        public T7 Item7 { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple
-                && comparer.Equals(Item1, tuple.Item1)
-                && comparer.Equals(Item2, tuple.Item2)
-                && comparer.Equals(Item3, tuple.Item3)
-                && comparer.Equals(Item4, tuple.Item4)
-                && comparer.Equals(Item5, tuple.Item5)
-                && comparer.Equals(Item6, tuple.Item6)
-                && comparer.Equals(Item7, tuple.Item7);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -660,7 +594,20 @@ namespace System
             return num != 0 ? num : comparer.Compare(Item7, tuple.Item7);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3, T4, T5, T6, T7> tuple
+                && comparer.Equals(Item1, tuple.Item1)
+                && comparer.Equals(Item2, tuple.Item2)
+                && comparer.Equals(Item3, tuple.Item3)
+                && comparer.Equals(Item4, tuple.Item4)
+                && comparer.Equals(Item5, tuple.Item5)
+                && comparer.Equals(Item6, tuple.Item6)
+                && comparer.Equals(Item7, tuple.Item7);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer) => Tuple.CombineHashCodes(
             comparer.GetHashCode(Item1),
@@ -670,6 +617,30 @@ namespace System
             comparer.GetHashCode(Item5),
             comparer.GetHashCode(Item6),
             comparer.GetHashCode(Item7));
+
+        int ITuple.Length => 7;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    case 3:  return Item4;
+                    case 4:  return Item5;
+                    case 5:  return Item6;
+                    case 6:  return Item7;
+                    default: throw new IndexOutOfRangeException();
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 
         public override string ToString()
         {
@@ -693,88 +664,35 @@ namespace System
 
             return sb.ToString();
         }
-
-        int ITuple.Length => 7;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    case 3: return Item4;
-                    case 4: return Item5;
-                    case 5: return Item6;
-                    case 6: return Item7;
-                    default: throw new IndexOutOfRangeException();
-                }
-            }
-        }
     }
 
     public class Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> : IStructuralEquatable, IStructuralComparable, IComparable, ITuple where TRest : ITuple
     {
-        public T1 Item1 => m_Item1;
-        private readonly T1 m_Item1;
-
-        public T2 Item2 => m_Item2;
-        private readonly T2 m_Item2;
-
-        public T3 Item3 => m_Item3;
-        private readonly T3 m_Item3;
-
-        public T4 Item4 => m_Item4;
-        private readonly T4 m_Item4;
-
-        public T5 Item5 => m_Item5;
-        private readonly T5 m_Item5;
-
-        public T6 Item6 => m_Item6;
-        private readonly T6 m_Item6;
-
-        public T7 Item7 => m_Item7;
-        private readonly T7 m_Item7;
-
-        public TRest Rest => m_Rest;
-        private readonly TRest m_Rest;
-
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
             if (typeof(TRest).IsValueType)
                 throw new ArgumentException(nameof(rest));
 
-            m_Item1 = item1;
-            m_Item2 = item2;
-            m_Item3 = item3;
-            m_Item4 = item4;
-            m_Item5 = item5;
-            m_Item6 = item6;
-            m_Item7 = item7;
-            m_Rest = rest;
+            Item1 = item1;
+            Item2 = item2;
+            Item3 = item3;
+            Item4 = item4;
+            Item5 = item5;
+            Item6 = item6;
+            Item7 = item7;
+            Rest = rest;
         }
 
-        public override bool Equals(object obj) => ((IStructuralEquatable)this).Equals(obj, EqualityComparer<object>.Default);
+        public T1 Item1 { get; }
+        public T2 Item2 { get; }
+        public T3 Item3 { get; }
+        public T4 Item4 { get; }
+        public T5 Item5 { get; }
+        public T6 Item6 { get; }
+        public T7 Item7 { get; }
+        public TRest Rest { get; }
 
-        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
-        {
-            if (other == null)
-                return false;
-
-            return other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple
-                && comparer.Equals(Item1, tuple.Item1)
-                && comparer.Equals(Item2, tuple.Item2)
-                && comparer.Equals(Item3, tuple.Item3)
-                && comparer.Equals(Item4, tuple.Item4)
-                && comparer.Equals(Item5, tuple.Item5)
-                && comparer.Equals(Item6, tuple.Item6)
-                && comparer.Equals(Item7, tuple.Item7)
-                && Comparer.Equals(Rest, tuple.Rest);
-        }
-
-        int IComparable.CompareTo(object obj) => ((IStructuralComparable)this).CompareTo(obj, Comparer<object>.Default);
+        int IComparable.CompareTo(object obj) => ((IStructuralComparable) this).CompareTo(obj, Comparer<object>.Default);
 
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
@@ -819,34 +737,72 @@ namespace System
             return num != 0 ? num : comparer.Compare(Rest, tuple.Rest);
         }
 
-        public override int GetHashCode() => ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        {
+            if (other == null)
+                return false;
+
+            return other is Tuple<T1, T2, T3, T4, T5, T6, T7, TRest> tuple
+                && comparer.Equals(Item1, tuple.Item1)
+                && comparer.Equals(Item2, tuple.Item2)
+                && comparer.Equals(Item3, tuple.Item3)
+                && comparer.Equals(Item4, tuple.Item4)
+                && comparer.Equals(Item5, tuple.Item5)
+                && comparer.Equals(Item6, tuple.Item6)
+                && comparer.Equals(Item7, tuple.Item7)
+                && Equals(Rest, tuple.Rest);
+        }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
             if (Rest.Length >= 8)
-                return ((IStructuralEquatable)Rest).GetHashCode(comparer);
+                return ((IStructuralEquatable) Rest).GetHashCode(comparer);
 
             switch (8 - Rest.Length)
             {
                 case 1:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 2:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 3:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 4:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 5:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 6:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 case 7:
-                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable)Rest).GetHashCode(comparer));
+                    return Tuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3), comparer.GetHashCode(Item4), comparer.GetHashCode(Item5), comparer.GetHashCode(Item6), comparer.GetHashCode(Item7), ((IStructuralEquatable) Rest).GetHashCode(comparer));
                 default:
                     return -1;
             }
         }
-        
+
+        int ITuple.Length => 7 + Rest.Length;
+
+        object ITuple.this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:  return Item1;
+                    case 1:  return Item2;
+                    case 2:  return Item3;
+                    case 3:  return Item4;
+                    case 4:  return Item5;
+                    case 5:  return Item6;
+                    case 6:  return Item7;
+                    default: return Rest[index - 7];
+                }
+            }
+        }
+
+        public override bool Equals(object obj) => ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+
+        public override int GetHashCode() => ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -871,26 +827,6 @@ namespace System
             sb.Append(")");
 
             return sb.ToString();
-        }
-
-        int ITuple.Length => 7 + Rest.Length;
-
-        object ITuple.this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return Item1;
-                    case 1: return Item2;
-                    case 2: return Item3;
-                    case 3: return Item4;
-                    case 4: return Item5;
-                    case 5: return Item6;
-                    case 6: return Item7;
-                    default: return Rest[index - 7];
-                }
-            }
         }
     }
 }
