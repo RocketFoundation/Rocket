@@ -55,9 +55,9 @@ namespace Rocket.Core.Plugins
         {
             get
             {
-                return commands
+                return commands?
                        .Where(c => c.Key.IsAlive)
-                       .SelectMany(c => c.Value);
+                       .SelectMany(c => c.Value) ?? new List<ICommand>();
             }
         }
 
