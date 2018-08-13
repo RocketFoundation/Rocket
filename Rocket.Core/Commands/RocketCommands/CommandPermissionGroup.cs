@@ -18,6 +18,7 @@ namespace Rocket.Core.Commands.RocketCommands
 
         public string Summary => "Manages permission groups.";
         public string Description => null;
+        public string Permission => "Rocket.Permissions.ManageGroups";
 
         public string[] Aliases => new[] { "PG" };
 

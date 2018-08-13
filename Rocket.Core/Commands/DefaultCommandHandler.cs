@@ -50,7 +50,15 @@ namespace Rocket.Core.Commands
             List<ICommand> tree = new List<ICommand> { context.Command };
             context = GetChild(context, context, tree);
 
-            var permission = GetPermission(context);
+            List<string> permissions = new List<string>()
+            {
+                GetPermission(context)
+            };
+
+            if (context.Command.Permission != null)
+                permissions.Add(context.Command.Permission);
+
+            string[] permissionsArray = permissions.ToArray();
 
 #if !DEBUG
             try
@@ -58,11 +66,11 @@ namespace Rocket.Core.Commands
 #endif
             IPermissionProvider provider = container.Resolve<IPermissionProvider>();
 
-            if (provider.CheckPermission(user, permission) != PermissionResult.Grant)
+            if (provider.CheckHasAnyPermission(user, permissionsArray) != PermissionResult.Grant)
             {
                 var logger = container.Resolve<ILogger>();
                 logger.LogInformation($"{user.Name} does not have permissions to execute: \"{commandLine}\"");
-                throw new NotEnoughPermissionsException(user, permission);
+                throw new NotEnoughPermissionsException(user, permissionsArray);
             }
 
             context.Command.Execute(context);

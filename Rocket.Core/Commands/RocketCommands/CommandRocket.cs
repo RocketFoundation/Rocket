@@ -16,6 +16,7 @@ namespace Rocket.Core.Commands.RocketCommands
     {
         public string Name => "Rocket";
         public string Syntax => "";
+        public string Permission => "Rocket.ManageRocket";
         public string Summary => "Manages RocketMod.";
         public string Description => null;
         public string[] Aliases => null;
@@ -39,6 +40,7 @@ namespace Rocket.Core.Commands.RocketCommands
     {
         public string Name => "Reload";
         public string Summary => "Reloads RocketMod and all plugins.";
+        public string Permission => "Rocket.ManageRocket.Reload";
         public string Description => null;
         public string Syntax => "";
         public IChildCommand[] ChildCommands => null;
@@ -65,6 +67,7 @@ namespace Rocket.Core.Commands.RocketCommands
         public string[] Aliases => null;
         public string Summary => "Installs a plugin";
         public string Description => null;
+        public string Permission => "Rocket.ManageRocket.Install";
         public string Syntax => "<repo> <plugin> [version] [-Pre]";
         public IChildCommand[] ChildCommands => null;
 
@@ -129,6 +132,7 @@ namespace Rocket.Core.Commands.RocketCommands
         public string[] Aliases => null;
         public string Summary => "Uninstalls plugin";
         public string Description => null;
+        public string Permission => "Rocket.ManageRocket.Uninstall";
         public string Syntax => "<repo> <plugin>";
         public IChildCommand[] ChildCommands => null;
 
@@ -173,6 +177,7 @@ namespace Rocket.Core.Commands.RocketCommands
         public string[] Aliases => null;
         public string Summary => "Updates plugin";
         public string Description => null;
+        public string Permission => "Rocket.ManageRocket.Update";
         public string Syntax => "<repo> <plugin> [version] [-Pre]";
         public IChildCommand[] ChildCommands => null;
 
@@ -231,6 +236,7 @@ namespace Rocket.Core.Commands.RocketCommands
         public string[] Aliases => new[] { "v" };
         public string Summary => "RocketMod version";
         public string Description => null;
+        public string Permission => "Rocket.ManageRocket.Version";
         public string Syntax => "";
         public IChildCommand[] ChildCommands => null;
         public bool SupportsUser(Type user)

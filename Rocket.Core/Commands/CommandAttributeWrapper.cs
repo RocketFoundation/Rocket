@@ -17,7 +17,7 @@ namespace Rocket.Core.Commands
         public CommandAttributeWrapper(object instance, MethodBase method,
                                        CommandAttribute attribute,
                                        string[] aliases,
-                                       Type[] supportedUsers)
+                                       Type[] supportedUsers, string permission)
         {
             this.supportedUsers = supportedUsers;
             Instance = instance;
@@ -25,6 +25,7 @@ namespace Rocket.Core.Commands
             Attribute = attribute;
             Name = attribute?.Name ?? method.Name;
             Syntax = attribute?.Syntax ?? BuildSyntaxFromMethod();
+            Permission = permission;
 
             Aliases = aliases;
         }
@@ -37,6 +38,7 @@ namespace Rocket.Core.Commands
         public string Summary => Attribute?.Summary;
         public string Description => Attribute?.Description;
         public string Syntax { get; }
+        public string Permission { get; }
         public IChildCommand[] ChildCommands { get; } //todo
         public string[] Aliases { get; }
 
